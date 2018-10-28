@@ -80,7 +80,11 @@
             <a class="dropdown-item" href="#">Settings</a>
             <a class="dropdown-item" href="#">Activity Log</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+            {% if 'logged_in' in session %}
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+            {% else %}
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#loginModal">Login</a>
+            {% endif %}
           </div>
         </li>
       </ul>
@@ -89,41 +93,42 @@
 
     <div id="wrapper">
 
-      <!-- Sidebar -->
-      <ul class="sidebar navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link" href="{{ url_for('static', filename='index.html') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Pages</span>
-          </a>
-          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-            <h6 class="dropdown-header">Login Screens:</h6>
-            <a class="dropdown-item" href="{{ url_for('static', filename='login.html') }}">Login</a>
-            <a class="dropdown-item" href="{{ url_for('static', filename='register.html') }}">Register</a>
-            <a class="dropdown-item" href="{{ url_for('static', filename='forgot-password.html') }}">Forgot Password</a>
-            <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Other Pages:</h6>
-            <a class="dropdown-item" href="{{ url_for('static', filename='404.html') }}">404 Page</a>
-            <a class="dropdown-item" href="{{ url_for('static', filename='blank.html') }}">Blank Page</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('static', filename='charts.html') }}">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Charts</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('static', filename='tables.html') }}">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span></a>
-        </li>
-      </ul>
+            <ul class="sidebar navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('index_page') }}">
+                  <i class="fas fa-fw fa-tachometer-alt"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-fw fa-folder"></i>
+                  <span>Pages</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+                  <h6 class="dropdown-header">Login Screens:</h6>
+                  <a class="dropdown-item" href="{{ url_for('static', filename='login.html') }}">Login</a>
+                  <a class="dropdown-item" href="{{ url_for('static', filename='register.html') }}">Register</a>
+                  <a class="dropdown-item" href="{{ url_for('static', filename='forgot-password.html') }}">Forgot Password</a>
+                  <div class="dropdown-divider"></div>
+                  <h6 class="dropdown-header">Other Pages:</h6>
+                  <a class="dropdown-item" href="{{ url_for('static', filename='404.html') }}">404 Page</a>
+                  <a class="dropdown-item" href="{{ url_for('static', filename='blank.html') }}">Blank Page</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('static', filename='charts.html') }}">
+                  <i class="fas fa-fw fa-chart-area"></i>
+                  <span>Charts</span></a>
+              </li>
+              {% if 'logged_in' in session %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('departments') }}">
+                  <i class="fas fa-fw fa-table"></i>
+                  <span>Departments</span></a>
+              </li>
+              {% endif %}
+            </ul>
 
       {% block content %}{% endblock %}
 
@@ -148,7 +153,26 @@
           <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-primary" href="{{ url_for('static', filename='login.html') }}">Logout</a>
+                <a class="btn btn-primary" href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- Login Modal-->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabelLogin">Ready to Login?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">Select "Login" below if you are ready to login.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modalLogin">Cancel</button>
+                <a class="btn btn-primary" href="{{ url_for('login') }}">Login</a>
           </div>
         </div>
       </div>
