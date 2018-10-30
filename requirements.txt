@@ -1,3 +1,5 @@
+gevent
 flask
-sqlalchemy
 mysql-connector-python
+redis
+sqlalchemy

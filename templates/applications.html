@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Applications</title>
+{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+
+        <div class="container-fluid">
+
+          <!-- Breadcrumbs-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="#">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Tables</li>
+          </ol>
+
+          <!-- DataTables Example -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-table"></i>
+              Data Table Example</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>Suma</th>
+                      <th>Credit State</th>
+                      <th>Currency</th>
+                      <th>Client Name</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>id</th>
+                      <th>Suma</th>
+                      <th>Credit State</th>
+                      <th>Currency</th>
+                      <th>Client Name</th>
+                      <th>Delete</th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                      {% for application in applications %}
+                        <tr>
+                          <td>{{ application.id }}</td>
+                          <td>{{ application.suma }}</td>
+                          <td>{{ application.credit_state }}</td>
+                          <td>{{ application.currency }}</td>
+                          <td>{{ application.client.first_name }}</td>
+                          <td><a href="{{ url_for('applications', application_id=application.id) }}">Delete</a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          </div>
+
+        </div>
+        <!-- /.container-fluid -->
+        <div class="container">
+          <div class="card card-login mx-auto mt-5">
+            <div class="card-header">Add department</div>
+            <div class="card-body">
+              <form method="post">
+                <div class="form-group">
+                  <div class="form-label-group">
+                    <input type="text" id="inputEmail" class="form-control"
+                           placeholder="City" required="required"
+                           autofocus="autofocus" name="city">
+                    <label for="inputEmail">City</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="form-label-group">
+                    <input type="text" id="inputPassword" class="form-control"
+                           placeholder="Count of workers" required="required"
+                           name="count_of_workers">
+                    <label for="inputPassword">Count of workers</label>
+                  </div>
+                </div>
+
+                <input class="btn btn-primary btn-block"
+                       type="submit" value="Add department">
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>Copyright © Your Website 2018</span>
+            </div>
+          </div>
+        </footer>
+
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 import redis
+from gevent.pywsgi import WSGIServer
 
 from flask import (
     Flask,
@@ -50,6 +51,21 @@ def departments():
                           departments=departments)
 
 
+@app.route('/applications', methods=['GET', 'POST'],
+           defaults={'application_id': None})
+@app.route('/applications/<int:application_id>',
+           methods=['GET', 'POST'])
+def applications(application_id):
+    if application_id:
+        application = mysql_session.query(Application).filter(
+            Application.id == application_id).one_or_none()
+        mysql_session.delete(application)
+        mysql_session.commit()
+
+    applications = mysql_session.query(Application).all()
+    return render_template('applications.html',
+                          applications=applications)
+
 @app.route('/departments/<int:department_id>',
            methods=['GET', 'POST'])
 def departments_detail(department_id=None):
@@ -99,9 +115,10 @@ def register():
     return render_template('register.html')
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
    Base.metadata.create_all(engine)
 
    app.secret_key = b'secret key'
-
-   app.run(host='0.0.0.0', port=5000, debug=True)
+   # app.run(host='0.0.0.0', port=5000, debug=True)
+   http_server = WSGIServer(('', 5000), app)
+   http_server.serve_forever()
