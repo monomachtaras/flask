@@ -1,5 +1,8 @@
+bs4
 gevent
 flask
+lxml
 mysql-connector-python
+pytest
 redis
 sqlalchemy

@@ -19,13 +19,6 @@ from models import (
 from utils import login_required
 
 
-# connection to mysql database
-engine = create_engine(
-    'mysql+mysqlconnector://itea:itea@localhost/itea')
-mysql_session_class = sessionmaker(bind=engine)
-mysql_session = mysql_session_class()
-
-
 app = Flask(__name__)
 
 
@@ -35,18 +28,18 @@ def index_page():
 
 
 @app.route('/departments', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def departments():
    if request.method == 'POST' and \
-           not mysql_session.query(Department).filter(Department.city == request.form['city']).one_or_none():
+           not app.mysql_session.query(Department).filter(Department.city == request.form['city']).one_or_none():
       city = request.form['city']
       count_of_workers = request.form['count_of_workers']
       new_department = Department(city=city,
                                   count_of_workers=count_of_workers)
-      mysql_session.add(new_department)
-      mysql_session.commit()
+      app.mysql_session.add(new_department)
+      app.mysql_session.commit()
 
-   departments = mysql_session.query(Department).all()
+   departments = app.mysql_session.query(Department).all()
    return render_template('departments.html',
                           departments=departments)
 
@@ -57,12 +50,12 @@ def departments():
            methods=['GET', 'POST'])
 def applications(application_id):
     if application_id:
-        application = mysql_session.query(Application).filter(
+        application = app.mysql_session.query(Application).filter(
             Application.id == application_id).one_or_none()
-        mysql_session.delete(application)
-        mysql_session.commit()
+        app.mysql_session.delete(application)
+        app.mysql_session.commit()
 
-    applications = mysql_session.query(Application).all()
+    applications = app.mysql_session.query(Application).all()
     return render_template('applications.html',
                           applications=applications)
 
@@ -70,7 +63,7 @@ def applications(application_id):
            methods=['GET', 'POST'])
 def departments_detail(department_id=None):
 
-   department = mysql_session.query(Department).filter(
+   department = app.mysql_session.query(Department).filter(
       Department.id == department_id).first()
 
    clients = department.clients
@@ -83,7 +76,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = mysql_session.query(User).filter(User.email == email,
+        user = app.mysql_session.query(User).filter(User.email == email,
                                           User.password == password).one_or_none()
         if user:
             session['logged_in'] = user.email
@@ -102,23 +95,34 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        if not mysql_session.query(User).filter(User.email == request.form['email']).one_or_none():
+        if not app.mysql_session.query(User).filter(User.email == request.form['email']).one_or_none():
            login = request.form['login']
            password = request.form['password']
            email = request.form['email']
            new_user = User(login=login,password=password, email=email)
-           mysql_session.add(new_user)
-           mysql_session.commit()
+           app.mysql_session.add(new_user)
+           app.mysql_session.commit()
         return redirect(url_for('login'))
 
 
     return render_template('register.html')
 
 
-if __name__ == '__main__':
-   Base.metadata.create_all(engine)
+def main():
+    # connection to mysql database
+    engine = create_engine(
+        'mysql+mysqlconnector://itea:itea@localhost/itea')
+    mysql_session_class = sessionmaker(bind=engine)
+    mysql_session = mysql_session_class()
 
-   app.secret_key = b'secret key'
-   # app.run(host='0.0.0.0', port=5000, debug=True)
-   http_server = WSGIServer(('', 5000), app)
-   http_server.serve_forever()
+    Base.metadata.create_all(engine)
+
+    app.mysql_session = mysql_session
+    app.secret_key = b'secret key'
+    # app.run(host='0.0.0.0', port=5000, debug=True)
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
+
+
+if __name__ == '__main__':
+    main()
